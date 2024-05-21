@@ -27,7 +27,7 @@ function RequestForm() {
         }
         try {
             const response = await axios.post(
-                'http://localhost:5000/requests',
+                'http://100.26.46.161:5000/requests',
                 {
                     phone,
                     message,
