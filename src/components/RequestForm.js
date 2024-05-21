@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import {
     TextField,
@@ -12,7 +12,21 @@ import {
 function RequestForm() {
     const [phone, setPhone] = useState('');
     const [message, setMessage] = useState('');
+    const [utmParams, setUtmParams] = useState({});
     const [error, setError] = useState('');
+
+    useEffect(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const utmSource = urlParams.get('utm_source');
+        const utmMedium = urlParams.get('utm_medium');
+        const utmCampaign = urlParams.get('utm_campaign');
+
+        setUtmParams({
+            utm_source: utmSource,
+            utm_medium: utmMedium,
+            utm_campaign: utmCampaign,
+        });
+    }, []);
 
     const validatePhone = (phone) => {
         const phoneRegex = /^\+?\d{10,15}$/;
@@ -31,6 +45,7 @@ function RequestForm() {
                 {
                     phone,
                     message,
+                    ...utmParams,
                 }
             );
             alert('Request sent successfully');
