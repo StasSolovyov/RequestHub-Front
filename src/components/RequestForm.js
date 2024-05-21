@@ -21,11 +21,16 @@ function RequestForm() {
         const utmMedium = urlParams.get('utm_medium');
         const utmCampaign = urlParams.get('utm_campaign');
 
-        setUtmParams({
+        const extractedUtmParams = {
             utm_source: utmSource,
             utm_medium: utmMedium,
             utm_campaign: utmCampaign,
-        });
+        };
+
+        setUtmParams(extractedUtmParams);
+
+        // Логирование для проверки извлечения UTM-меток
+        console.log('Extracted UTM params:', extractedUtmParams);
     }, []);
 
     const validatePhone = (phone) => {
@@ -39,21 +44,32 @@ function RequestForm() {
             setError('Invalid phone number format');
             return;
         }
+
+        const requestData = {
+            phone,
+            message,
+            ...utmParams,
+        };
+
+        // Логирование данных перед отправкой на сервер
+        console.log('Sending request data:', requestData);
+
         try {
             const response = await axios.post(
-                'http://100.26.46.161:5000/requests',
-                {
-                    phone,
-                    message,
-                    ...utmParams,
-                }
+                'http://localhost:5000/requests',
+                requestData
             );
-            alert('Request sent successfully');
-            setPhone('');
-            setMessage('');
-            setError('');
+            if (response && response.data) {
+                alert('Request sent successfully');
+                setPhone('');
+                setMessage('');
+                setError('');
+            } else {
+                setError('Unexpected error occurred');
+            }
         } catch (err) {
-            setError(err.response.data.error);
+            console.error('Error:', err);
+            setError(err.response?.data?.error || 'An error occurred');
         }
     };
 
